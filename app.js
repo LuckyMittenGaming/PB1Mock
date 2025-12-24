@@ -1,5 +1,3 @@
-// app.js
-
 /* ===== DATA ===== */
 const DATA = [
   {
@@ -74,7 +72,6 @@ function build() {
   `
   ).join("");
 
-  // Duplicate for infinite loop
   stack.innerHTML += stack.innerHTML;
 
   loopHeight = stack.scrollHeight / 2;
@@ -83,13 +80,45 @@ function build() {
 
 build();
 
-/* ===== SCROLL ===== */
+/* ===== DESKTOP WHEEL SCROLL ===== */
 function onWheel(e) {
   if (paused) return;
   e.preventDefault();
   target += e.deltaY;
 }
 
+scroller.addEventListener("wheel", onWheel, { passive: false });
+
+/* ===== TOUCH SCROLL (MOBILE FIX) ===== */
+let touchStartY = 0;
+let touchLastY = 0;
+
+scroller.addEventListener(
+  "touchstart",
+  e => {
+    if (paused) return;
+    touchStartY = e.touches[0].clientY;
+    touchLastY = touchStartY;
+  },
+  { passive: false }
+);
+
+scroller.addEventListener(
+  "touchmove",
+  e => {
+    if (paused) return;
+    e.preventDefault();
+
+    const currentY = e.touches[0].clientY;
+    const deltaY = touchLastY - currentY;
+
+    target += deltaY * 1.2; // swipe sensitivity
+    touchLastY = currentY;
+  },
+  { passive: false }
+);
+
+/* ===== ANIMATION LOOP ===== */
 function animate() {
   if (!paused) {
     target += hoverSlow ? driftSpeed * 0.5 : driftSpeed;
@@ -109,7 +138,6 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-scroller.addEventListener("wheel", onWheel, { passive: false });
 requestAnimationFrame(animate);
 
 /* ===== HOVER SLOW ===== */
