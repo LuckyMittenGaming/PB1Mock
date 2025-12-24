@@ -238,6 +238,13 @@ html, body {
   }
 }
 
+/* ===== Mobile: always show title/subtitle ===== */
+@media (hover: none) and (pointer: coarse) {
+  .overlay {
+    opacity: 1;
+  }
+}
+
 /* ===== Grain ===== */
 .grain {
   position: absolute;
