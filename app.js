@@ -5,8 +5,7 @@ const DATA = [
     desc: "Luxury Party Bus",
     paragraph:
       "Premium party bus experiences built for unforgettable Vegas nights, private celebrations, and high-energy group transportation across the Strip.",
-    image:
-      "https://lasvegaspartybuses.com/wp-content/uploads/2025/12/party-bus-logo.png",
+    image: "https://lasvegaspartybuses.com/wp-content/uploads/2025/12/party-bus-logo.png",
     w: "60%",
     h: "60vh",
     x: "0%"
@@ -16,8 +15,7 @@ const DATA = [
     desc: "Events & Weddings",
     paragraph:
       "Elegant, reliable transportation solutions designed for weddings, corporate events, and upscale private gatherings throughout Las Vegas.",
-    image:
-      "https://lasvegaspartybuses.com/wp-content/uploads/2022/08/Las-Vegas-Party-Bus-Logo.png",
+    image: "https://lasvegaspartybuses.com/wp-content/uploads/2022/08/Las-Vegas-Party-Bus-Logo.png",
     w: "40%",
     h: "45vh",
     x: "55%"
@@ -27,39 +25,29 @@ const DATA = [
     desc: "Nightlife Experiences",
     paragraph:
       "Late-night VIP transportation tailored for nightlife, bottle service runs, special events, and unforgettable after-hours Vegas experiences.",
-    image:
-      "https://lasvegaspartybuses.com/wp-content/uploads/2025/12/party-bus-logo.png",
+    image: "https://lasvegaspartybuses.com/wp-content/uploads/2025/12/party-bus-logo.png",
     w: "50%",
     h: "50vh",
     x: "15%"
   }
 ];
 
-/* ===== DOM ===== */
 const scroller = document.getElementById("scroller");
 const stack = document.getElementById("stack");
 
-const modal = document.getElementById("modal");
-const modalBackdrop = document.getElementById("modalBackdrop");
-const modalClose = document.getElementById("modalClose");
-const modalMedia = document.getElementById("modalMedia");
-const modalTitle = document.getElementById("modalTitle");
-const modalDesc = document.getElementById("modalDesc");
-
-/* ===== STATE ===== */
 let target = 0;
 let current = 0;
 let loopHeight = 0;
 let paused = false;
 
-/* 🚀 Drift speed */
-let driftSpeed = 1.2;
+/* 🚀 Drift speed (unchanged) */
+let driftSpeed = 1.20;
 let hoverSlow = false;
 
-/* ===== BUILD CARDS ===== */
+/* ===== Build Cards ===== */
 function build() {
-  stack.innerHTML = DATA.map(
-    d => `
+  // Create 4 copies for the buffer
+  const cardHTML = DATA.map(d => `
     <li class="card" style="--w:${d.w};--h:${d.h};--x:${d.x}">
       <div class="media">
         <img src="${d.image}" />
@@ -69,87 +57,69 @@ function build() {
         <p>${d.desc}</p>
       </div>
     </li>
-  `
-  ).join("");
+  `).join("");
 
-  stack.innerHTML += stack.innerHTML;
-
-  loopHeight = stack.scrollHeight / 2;
+  stack.innerHTML = cardHTML + cardHTML + cardHTML + cardHTML;
+  
+  // 🔑 FIX 1: Round this to a whole number to prevent sub-pixel jumps
+  loopHeight = Math.round(stack.scrollHeight / 4);
+  
   current = target = loopHeight;
 }
 
 build();
 
-/* ===== DESKTOP WHEEL SCROLL ===== */
+/* ===== Scroll ===== */
 function onWheel(e) {
   if (paused) return;
   e.preventDefault();
   target += e.deltaY;
 }
 
-scroller.addEventListener("wheel", onWheel, { passive: false });
-
-/* ===== TOUCH SCROLL (MOBILE FIX) ===== */
-let touchStartY = 0;
-let touchLastY = 0;
-
-scroller.addEventListener(
-  "touchstart",
-  e => {
-    if (paused) return;
-    touchStartY = e.touches[0].clientY;
-    touchLastY = touchStartY;
-  },
-  { passive: false }
-);
-
-scroller.addEventListener(
-  "touchmove",
-  e => {
-    if (paused) return;
-    e.preventDefault();
-
-    const currentY = e.touches[0].clientY;
-    const deltaY = touchLastY - currentY;
-
-    target += deltaY * 1.2; // swipe sensitivity
-    touchLastY = currentY;
-  },
-  { passive: false }
-);
-
-/* ===== ANIMATION LOOP ===== */
 function animate() {
   if (!paused) {
     target += hoverSlow ? driftSpeed * 0.5 : driftSpeed;
-    current += (target - current) * 0.065;
+    current += (target - current) * 0.075;
 
-    if (current < loopHeight * 0.25) {
+    // 🔑 FIX 2: Simplified Boundaries
+    // We have 4 sets. We want to stay in the middle (Set 2 and 3).
+    // If we go past Set 3 (into Set 4), jump back to Set 3.
+    // If we go before Set 2 (into Set 1), jump forward to Set 2.
+    
+    if (current > loopHeight * 3) {
+      current -= loopHeight;
+      target -= loopHeight; // Adjust target too to preserve momentum
+    } 
+    else if (current < loopHeight) {
       current += loopHeight;
       target += loopHeight;
-    } else if (current > loopHeight * 1.75) {
-      current -= loopHeight;
-      target -= loopHeight;
     }
 
     scroller.scrollTop = current;
   }
-
   requestAnimationFrame(animate);
 }
 
+scroller.addEventListener("wheel", onWheel, { passive: false });
 requestAnimationFrame(animate);
 
-/* ===== HOVER SLOW ===== */
+/* ===== Hover Slow ===== */
 stack.addEventListener("mouseover", e => {
   if (e.target.closest(".card")) hoverSlow = true;
 });
-
 stack.addEventListener("mouseout", e => {
   if (e.target.closest(".card")) hoverSlow = false;
 });
 
-/* ===== MODAL ===== */
+/* ===== Modal ===== */
+const modal = document.getElementById("modal");
+const modalBackdrop = document.getElementById("modalBackdrop");
+const modalClose = document.getElementById("modalClose");
+const modalMedia = document.getElementById("modalMedia");
+const modalTitle = document.getElementById("modalTitle");
+const modalDesc = document.getElementById("modalDesc");
+
+/* 🔑 New paragraph container */
 let modalParagraph;
 
 stack.addEventListener("click", e => {
@@ -163,7 +133,7 @@ stack.addEventListener("click", e => {
   const data = DATA[index];
 
   setTimeout(() => {
-    modalMedia.innerHTML = `<img src="${data.image}" />`;
+    modalMedia.innerHTML = `<img src="${data.image}">`;
     modalTitle.textContent = data.title;
     modalDesc.textContent = data.desc;
 
