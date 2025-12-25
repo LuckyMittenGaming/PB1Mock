@@ -1,21 +1,3 @@
-import { neonCursor } from 'https://unpkg.com/threejs-toys@0.0.8/build/threejs-toys.module.cdn.min.js';
-
-/* 🔑 Force neon cursor ABOVE EVERYTHING */
-neonCursor({
-  el: document.getElementById('app'),
-  shaderPoints: 16,
-  curvePoints: 80,
-  curveLerp: 0.5,
-  radius1: 5,
-  radius2: 30,
-  velocityTreshold: 10,
-  sleepRadiusX: 100,
-  sleepRadiusY: 100,
-  sleepTimeCoefX: 0.0025,
-  sleepTimeCoefY: 0.0025,
-  zIndex: 9999
-});
-
 /* ===== DATA ===== */
 const DATA = [
   {
@@ -100,13 +82,9 @@ function animate() {
     current += (target - current) * 0.075;
 
     // 🔑 FIX 2: Simplified Boundaries
-    // We have 4 sets. We want to stay in the middle (Set 2 and 3).
-    // If we go past Set 3 (into Set 4), jump back to Set 3.
-    // If we go before Set 2 (into Set 1), jump forward to Set 2.
-    
     if (current > loopHeight * 3) {
       current -= loopHeight;
-      target -= loopHeight; // Adjust target too to preserve momentum
+      target -= loopHeight; 
     } 
     else if (current < loopHeight) {
       current += loopHeight;
