@@ -11,11 +11,15 @@
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
-  <link rel="stylesheet" href="style.css" />
+  <!-- Neon cursor -->
+  <script type="module" src="./neon.js"></script>
+
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 
 <body>
 
+  <!-- Floating Action Button -->
   <div class="fab" id="fab">
     <div class="fab-main">+</div>
     <div class="fab-actions">
@@ -23,7 +27,11 @@
       <a href="#">Sprinters</a>
       <a href="#">Services</a>
       <a href="#">Tours</a>
-      <a href="https://luckymittengaming.github.io/brand-gateway/">RoadBlock</a>
+
+      <!-- ✅ FIXED ROADBLOCK LINK -->
+      <a href="https://luckymittengaming.github.io/brand-gateway/">
+        RoadBlock
+      </a>
     </div>
   </div>
 
@@ -34,6 +42,7 @@
     <div class="grain"></div>
   </main>
 
+  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-backdrop" id="modalBackdrop"></div>
     <div class="modal-panel">
@@ -46,8 +55,6 @@
     </div>
   </div>
 
-  <script type="module" src="neon.js"></script>
-  
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
