@@ -59,6 +59,7 @@ html, body {
   text-decoration: none;
   color: #00f6ff;
   border: 1px solid rgba(0,246,255,0.4);
+  white-space: nowrap; /* Added to keep text on one line */
 }
 
 .fab.open .fab-actions {
