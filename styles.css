@@ -128,8 +128,9 @@ html, body {
   opacity: 0;
   transition: opacity 0.4s ease;
 }
+
 .overlay h2 {
-  margin-bottom: 8px; /* tighten or loosen */
+  margin-bottom: 8px;
 }
 
 .overlay p {
@@ -179,7 +180,7 @@ html, body {
 .modal-media {
   position: relative;
   padding-top: 24px;
-  padding-bottom: 0px;   /* keeps text close */
+  padding-bottom: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -187,21 +188,20 @@ html, body {
 
 .modal-media img {
   max-width: 70%;
-  max-height: 45vh;      /* restore logo presence */
+  max-height: 45vh;
   width: auto;
   height: auto;
-  flex-shrink: 0;        /* 🔑 prevents shrink */
+  flex-shrink: 0;
 }
 
 /* ===== UPDATED MODAL TEXT LAYOUT ===== */
 .modal-body {
-  padding: 0px 32px 32px; /* pulls content upward */
+  padding: 0px 32px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Tight stack for title + subtitle */
 .modal-body h2 {
   margin-bottom: 4px;
 }
@@ -210,9 +210,8 @@ html, body {
   margin-top: 2px;
 }
 
-/* Paragraph breathes on its own */
 .modal-paragraph {
-  margin-top: 16px; /* only this adds space */
+  margin-top: 16px;
 }
 
 /* ===== Modal Close ===== */
@@ -229,7 +228,7 @@ html, body {
   pointer-events: auto;
 }
 
-/* ===== Responsive ===== */
+/* ===== Responsive Card Sizing ===== */
 @media (max-width: 900px) {
   .card {
     width: 100% !important;
@@ -238,8 +237,8 @@ html, body {
   }
 }
 
-/* ===== Mobile: always show title/subtitle ABOVE image ===== */
-@media (hover: none) and (pointer: coarse) {
+/* ===== Mobile: force overlay visible + ABOVE image ===== */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
   .overlay {
     opacity: 1;
     z-index: 2;
@@ -247,6 +246,37 @@ html, body {
 
   .media {
     z-index: 1;
+    pointer-events: none;
+  }
+}
+
+/* ===== Mobile: center title & subtitle text ===== */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  .overlay {
+    align-items: center;
+    text-align: center;
+    padding-bottom: 32px;
+  }
+
+  .overlay h2 {
+    margin-bottom: 6px;
+  }
+
+  .overlay p {
+    margin-top: 0;
+  }
+}
+
+/* ===== Mobile typography refinement ===== */
+@media (max-width: 900px) {
+  .overlay h2 {
+    font-size: 1.4rem;
+    letter-spacing: 0.04em;
+  }
+
+  .overlay p {
+    font-size: 0.9rem;
+    opacity: 0.85;
   }
 }
 
