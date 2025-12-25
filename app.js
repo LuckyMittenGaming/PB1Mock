@@ -40,7 +40,7 @@ let current = 0;
 let loopHeight = 0;
 let paused = false;
 
-/* 🚀 Drift speed (unchanged) */
+/* 🚀 Drift speed */
 let driftSpeed = 1.20;
 let hoverSlow = false;
 
@@ -61,7 +61,7 @@ function build() {
 
   stack.innerHTML = cardHTML + cardHTML + cardHTML + cardHTML;
   
-  // 🔑 FIX 1: Round this to a whole number to prevent sub-pixel jumps
+  // Round this to a whole number to prevent sub-pixel jumps
   loopHeight = Math.round(stack.scrollHeight / 4);
   
   current = target = loopHeight;
@@ -69,26 +69,55 @@ function build() {
 
 build();
 
-/* ===== Scroll ===== */
+/* ===== Scroll Logic (Mouse Wheel) ===== */
 function onWheel(e) {
   if (paused) return;
   e.preventDefault();
   target += e.deltaY;
 }
+scroller.addEventListener("wheel", onWheel, { passive: false });
 
+/* ===== Scroll Logic (Touch / Mobile) ===== */
+let touchStart = 0;
+let touchLast = 0;
+let isDragging = false;
+
+scroller.addEventListener("touchstart", e => {
+  if (paused) return;
+  isDragging = true;
+  // Record where the finger landed
+  touchStart = e.touches[0].clientY;
+  touchLast = touchStart;
+}, { passive: true });
+
+scroller.addEventListener("touchmove", e => {
+  if (paused || !isDragging) return;
+  
+  const touchCurrent = e.touches[0].clientY;
+  const delta = touchLast - touchCurrent; // Calculate how far finger moved
+  
+  // Multiply by 2.5 to make the swipe feel more natural/responsive
+  target += delta * 2.5; 
+  touchLast = touchCurrent;
+  
+  // Prevent default browser scrolling
+  if (e.cancelable) e.preventDefault(); 
+}, { passive: false });
+
+scroller.addEventListener("touchend", () => {
+  isDragging = false;
+});
+
+/* ===== Animation Loop ===== */
 function animate() {
   if (!paused) {
     target += hoverSlow ? driftSpeed * 0.5 : driftSpeed;
     current += (target - current) * 0.075;
 
-    // 🔑 FIX 2: Simplified Boundaries
-    // We have 4 sets. We want to stay in the middle (Set 2 and 3).
-    // If we go past Set 3 (into Set 4), jump back to Set 3.
-    // If we go before Set 2 (into Set 1), jump forward to Set 2.
-    
+    // Boundary Checks
     if (current > loopHeight * 3) {
       current -= loopHeight;
-      target -= loopHeight; // Adjust target too to preserve momentum
+      target -= loopHeight; 
     } 
     else if (current < loopHeight) {
       current += loopHeight;
@@ -100,7 +129,6 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-scroller.addEventListener("wheel", onWheel, { passive: false });
 requestAnimationFrame(animate);
 
 /* ===== Hover Slow ===== */
@@ -119,7 +147,6 @@ const modalMedia = document.getElementById("modalMedia");
 const modalTitle = document.getElementById("modalTitle");
 const modalDesc = document.getElementById("modalDesc");
 
-/* 🔑 New paragraph container */
 let modalParagraph;
 
 stack.addEventListener("click", e => {
